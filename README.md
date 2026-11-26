@@ -11,7 +11,7 @@
 
 ## 怎么打开
 
-(https://lpr1376375365-tech.github.io/rss2026-figures/)。
+https://lpr1376375365-tech.github.io/rss2026-figures/
 
 ## 文件
 
