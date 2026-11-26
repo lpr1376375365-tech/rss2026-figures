@@ -11,7 +11,7 @@
 
 ## 怎么打开
 
-`index.html` 读取的是同目录下的 `data.js` 和 `img/`，直接双击 `index.html` 用浏览器打开就行，不需要联网。
+(https://lpr1376375365-tech.github.io/rss2026-figures/)。
 
 ## 文件
 
