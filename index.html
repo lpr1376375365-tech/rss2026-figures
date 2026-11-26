@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RSS 2026 图表库</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#1d1d1f; --muted:#6e6e73; --line:#e3e3e0;
+  --chip:#efefec; --chip-on:#1d1d1f; --chip-on-ink:#ffffff; --accent:#c2410c; --star:#d97706;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141415; --panel:#1e1e20; --ink:#f2f2f2; --muted:#a1a1a6; --line:#323235;
+    --chip:#2a2a2d; --chip-on:#f2f2f2; --chip-on-ink:#141415; --accent:#fb923c; --star:#fbbf24;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141415; --panel:#1e1e20; --ink:#f2f2f2; --muted:#a1a1a6; --line:#323235;
+  --chip:#2a2a2d; --chip-on:#f2f2f2; --chip-on-ink:#141415; --accent:#fb923c; --star:#fbbf24;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",sans-serif}
+a{color:inherit}
+header{padding:28px 16px 8px;max-width:1500px;margin:0 auto}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:.01em}
+.sub{color:var(--muted);margin:0}
+.bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar-in{max-width:1500px;margin:0 auto;padding:10px 16px;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lbl{color:var(--muted);font-size:12px;margin-right:4px;min-width:3em}
+.chip{border:0;background:var(--chip);color:var(--ink);padding:5px 11px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.chip .n{color:var(--muted);font-size:11px;margin-left:4px}
+.chip.on{background:var(--chip-on);color:var(--chip-on-ink)}
+.chip.on .n{color:inherit;opacity:.7}
+.chip.star.on{background:var(--star);color:#1d1d1f}
+select,input[type=search]{font:inherit;font-size:13px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:5px 9px}
+input[type=search]{min-width:200px;flex:1;max-width:340px}
+.seg{display:inline-flex;background:var(--chip);border-radius:999px;padding:2px}
+.seg button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:13px;padding:4px 12px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--panel);box-shadow:var(--shadow)}
+.count{color:var(--muted);font-size:12px;margin-left:auto}
+main{max-width:1500px;margin:0 auto;padding:16px}
+.grid{columns:4 300px;column-gap:14px}
+.card{break-inside:avoid;margin:0 0 14px;background:var(--panel);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;cursor:zoom-in;border:1px solid var(--line)}
+.card .im{background:#fff;display:block}
+.card img{display:block;width:100%;height:auto}
+.card .meta{padding:8px 10px 10px;display:flex;flex-direction:column;gap:3px}
+.card .t{font-size:12.5px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:var(--muted)}
+.tag{background:var(--chip);border-radius:4px;padding:0 6px}
+.tag.c{color:var(--accent)}
+.note{font-size:12px;color:var(--star)}
+.starmark{color:var(--star)}
+.paper{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 14px 4px;margin:0 0 18px;box-shadow:var(--shadow)}
+.paper h3{margin:0 0 2px;font-size:15.5px;line-height:1.35}
+.paper .au{color:var(--muted);font-size:12.5px;margin:0 0 6px}
+.paper .links{font-size:12.5px;margin:0 0 10px;display:flex;gap:12px;flex-wrap:wrap;color:var(--muted)}
+.strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px}
+.strip .card{flex:0 0 auto;width:260px;margin:0}
+.group-h{font-size:13px;color:var(--muted);margin:22px 0 10px;font-weight:600;letter-spacing:.02em}
+.empty{color:var(--muted);text-align:center;padding:60px 0}
+/* lightbox */
+.lb{position:fixed;inset:0;background:rgba(10,10,12,.86);z-index:20;display:none;align-items:stretch;justify-content:center}
+.lb.on{display:flex}
+.lb-in{display:flex;flex-direction:column;max-width:1300px;width:100%;padding:16px;gap:10px}
+.lb-img{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.lb-img img{max-width:100%;max-height:100%;background:#fff;border-radius:6px;object-fit:contain}
+.lb-cap{background:var(--panel);color:var(--ink);border-radius:10px;padding:12px 14px;max-height:34vh;overflow:auto;font-size:13px}
+.lb-cap .t{font-weight:600;font-size:14px}
+.lb-cap .links{display:flex;gap:14px;flex-wrap:wrap;margin:4px 0 6px;color:var(--muted);font-size:12.5px}
+.lb-btn{position:fixed;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.14);color:#fff;border:0;width:44px;height:64px;border-radius:8px;font-size:26px;cursor:pointer}
+.lb-prev{left:8px}.lb-next{right:8px}
+.lb-x{position:fixed;top:10px;right:12px;background:rgba(255,255,255,.14);color:#fff;border:0;width:40px;height:40px;border-radius:50%;font-size:22px;cursor:pointer}
+footer{max-width:1500px;margin:0 auto;padding:10px 16px 40px;color:var(--muted);font-size:12px}
+@media (max-width:640px){
+  h1{font-size:21px}
+  .grid{columns:2 150px;column-gap:10px}
+  .card{margin-bottom:10px}
+  .strip .card{width:200px}
+  .lb-btn{display:none}
+  input[type=search]{min-width:0;max-width:none;width:100%}
+  .count{margin-left:0}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>RSS 2026 图表库</h1>
+  <p class="sub" id="sub"></p>
+</header>
+<div class="bar"><div class="bar-in">
+  <div class="row">
+    <span class="seg" id="view"><button data-v="cat" class="on">按类别</button><button data-v="paper">按论文</button></span>
+    <input type="search" id="q" placeholder="搜索标题、图注、作者…">
+    <select id="grp"><option value="">全部方向</option></select>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="row" id="cats"><span class="lbl">类别</span></div>
+  <div class="row" id="charts" hidden><span class="lbl">图表</span></div>
+</div></div>
+<main id="main"></main>
+<footer>
+  图片由程序从 RSS 2026 官方论文集（roboticsproceedings.org/rss22）的 PDF 中自动裁剪，版权归原作者所有，仅供个人学习参考。分类与 ★ 精选由程序和 AI 判断，可能有误差。
+</footer>
+<div class="lb" id="lb">
+  <button class="lb-x" id="lbx" aria-label="关闭">×</button>
+  <button class="lb-btn lb-prev" id="lbp" aria-label="上一张">‹</button>
+  <button class="lb-btn lb-next" id="lbn" aria-label="下一张">›</button>
+  <div class="lb-in"><div class="lb-img"><img id="lbimg" alt=""></div><div class="lb-cap" id="lbcap"></div></div>
+</div>
+<script src="data.js"></script>
+<script>
+(function(){
+const CAT={teaser:'主图',method:'方法图',chart:'实验图表',setup:'实验设置',qualitative:'定性结果',text:'文字图',other:'其他'};
+const CATORDER=['teaser','method','chart','setup','qualitative','text','other'];
+const CH={bar:'柱状图',line:'折线图',pie:'饼/环图',scatter:'散点图',heatmap:'热力图',radar:'雷达图',box:'箱线/小提琴',mixed:'组合图'};
+const CHORDER=['bar','line','pie','scatter','heatmap','radar','box','mixed'];
+const D=window.DATA||[];
+const figs=[];
+D.forEach(p=>p.figs.forEach(f=>{ if(!f.bad) figs.push(Object.assign({paper:p},f)); }));
+const st={view:'cat',cat:'all',chart:'',star:false,q:'',grp:''};
+try{ const s=JSON.parse(localStorage.getItem('rss26fig')||'{}'); if(s.view) st.view=s.view; }catch(e){}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+$('#sub').textContent=`收录 ${D.length} 篇 VLA / Agentic Robotics 方向论文、${figs.length} 张图，按主图、方法图、实验图表等分类，★ 为版式或配色出色的图。`;
+const groups=[...new Set(D.map(p=>p.group))];
+groups.forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;$('#grp').appendChild(o);});
+
+function base(){ // filters except cat/chart
+  const q=st.q.trim().toLowerCase();
+  return figs.filter(f=>(!st.grp||f.paper.group===st.grp)&&(!st.star||f.star)&&
+    (!q||(f.paper.title+' '+f.caption+' '+f.paper.authors.join(' ')).toLowerCase().includes(q)));
+}
+function filtered(){
+  return base().filter(f=>(st.cat==='all'||f.cat===st.cat)&&(!st.chart||f.chart===st.chart));
+}
+function chips(){
+  const b=base();
+  const c=$('#cats'); c.querySelectorAll('button').forEach(x=>x.remove());
+  const mk=(k,label,n,cls)=>{const x=document.createElement('button');x.className='chip'+(cls?' '+cls:'');x.dataset.k=k;x.innerHTML=esc(label)+(n!=null?`<span class="n">${n}</span>`:'');return x;};
+  const all=mk('all','全部',b.length); if(st.cat==='all') all.classList.add('on'); c.appendChild(all);
+  CATORDER.forEach(k=>{const n=b.filter(f=>f.cat===k).length; if(!n&&st.cat!==k) return; const x=mk(k,CAT[k],n); if(st.cat===k) x.classList.add('on'); c.appendChild(x);});
+  const sx=mk('star','★ 精选',figs.filter(f=>f.star).length,'star'); if(st.star) sx.classList.add('on'); c.appendChild(sx);
+  const ch=$('#charts'); ch.querySelectorAll('button').forEach(x=>x.remove());
+  ch.hidden=st.cat!=='chart';
+  if(st.cat==='chart'){
+    const cb=b.filter(f=>f.cat==='chart');
+    const a=mk('','全部图表',cb.length); if(!st.chart) a.classList.add('on'); ch.appendChild(a);
+    CHORDER.forEach(k=>{const n=cb.filter(f=>f.chart===k).length; if(!n) return; const x=mk(k,CH[k],n); if(st.chart===k) x.classList.add('on'); ch.appendChild(x);});
+  }
+}
+function card(f,i){
+  const tags=[`<span class="tag c">${CAT[f.cat]||f.cat}${f.chart?' · '+(CH[f.chart]||f.chart):''}</span>`,`<span>Fig. ${f.num}</span>`];
+  if(f.star) tags.unshift('<span class="starmark">★</span>');
+  return `<div class="card" data-i="${i}"><div class="im"><img loading="lazy" src="img/${esc(f.file)}" alt="${esc(f.paper.short)} Fig. ${f.num}" width="${f.w||''}" height="${f.h||''}"></div>
+  <div class="meta"><div class="t">${esc(f.paper.short)}</div><div class="tags">${tags.join('')}</div>${f.star&&f.note?`<div class="note">${esc(f.note)}</div>`:''}</div></div>`;
+}
+let cur=[];
+function render(){
+  chips();
+  const list=filtered(); cur=list;
+  $('#count').textContent=`${list.length} 张图`;
+  const m=$('#main');
+  if(!list.length){m.innerHTML='<div class="empty">没有符合条件的图</div>';return;}
+  if(st.view==='cat'){
+    m.innerHTML=`<div class="grid">${list.map((f,i)=>card(f,i)).join('')}</div>`;
+  }else{
+    let html='',lastG=null; const byP=new Map();
+    list.forEach((f,i)=>{if(!byP.has(f.paper.id)) byP.set(f.paper.id,[]); byP.get(f.paper.id).push([f,i]);});
+    D.forEach(p=>{const arr=byP.get(p.id); if(!arr) return;
+      if(p.group!==lastG){html+=`<div class="group-h">${esc(p.group)}</div>`; lastG=p.group;}
+      html+=`<section class="paper"><h3>${esc(p.title)}${p.award?` <span class="tag c">${esc(p.award)}</span>`:''}</h3><p class="au">${esc(p.authors.join(', '))}</p>
+      <p class="links"><a href="${p.pdf}" target="_blank" rel="noopener">PDF</a><a href="${p.page}" target="_blank" rel="noopener">论文页</a><span>${arr.length} 张图</span></p>
+      <div class="strip">${arr.map(([f,i])=>card(f,i)).join('')}</div></section>`;});
+    m.innerHTML=html;
+  }
+}
+let li=-1;
+function openLB(i){
+  li=i; const f=cur[i]; if(!f) return;
+  $('#lbimg').src='img/'+f.file; $('#lbimg').alt=f.paper.short+' Fig. '+f.num;
+  $('#lbcap').innerHTML=`<div class="t">${f.star?'<span class="starmark">★</span> ':''}${esc(f.paper.title)}</div>
+  <div class="links"><span>${esc(CAT[f.cat]||f.cat)}${f.chart?' · '+esc(CH[f.chart]||f.chart):''}</span><span>第 ${f.page} 页</span><a href="${f.paper.pdf}#page=${f.page}" target="_blank" rel="noopener">在 PDF 中查看</a><a href="${f.paper.page}" target="_blank" rel="noopener">论文页</a><span>${i+1} / ${cur.length}</span></div>
+  ${f.star&&f.note?`<div class="note">★ ${esc(f.note)}</div>`:''}<div>${esc(f.caption)}</div>`;
+  $('#lb').classList.add('on'); document.body.style.overflow='hidden';
+}
+function closeLB(){ $('#lb').classList.remove('on'); document.body.style.overflow=''; li=-1; }
+function step(d){ if(li<0) return; openLB((li+d+cur.length)%cur.length); }
+$('#main').addEventListener('click',e=>{const c=e.target.closest('.card'); if(c) openLB(+c.dataset.i);});
+$('#lbx').onclick=closeLB; $('#lbp').onclick=()=>step(-1); $('#lbn').onclick=()=>step(1);
+$('#lb').addEventListener('click',e=>{ if(e.target.id==='lb'||e.target.classList.contains('lb-img')) closeLB(); });
+document.addEventListener('keydown',e=>{ if(li<0) return; if(e.key==='Escape') closeLB(); if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1); });
+$('#cats').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; const k=b.dataset.k;
+  if(k==='star') st.star=!st.star; else {st.cat=k; st.chart='';} render();});
+$('#charts').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; st.chart=b.dataset.k; render();});
+$('#view').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; st.view=b.dataset.v;
+  document.querySelectorAll('#view button').forEach(x=>x.classList.toggle('on',x===b));
+  try{localStorage.setItem('rss26fig',JSON.stringify({view:st.view}));}catch(err){} render();});
+document.querySelectorAll('#view button').forEach(x=>x.classList.toggle('on',x.dataset.v===st.view));
+let t; $('#q').addEventListener('input',e=>{clearTimeout(t); t=setTimeout(()=>{st.q=e.target.value; render();},150);});
+$('#grp').addEventListener('change',e=>{st.grp=e.target.value; render();});
+render();
+})();
+</script>
+</body>
+</html>
